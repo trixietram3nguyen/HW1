@@ -29,39 +29,66 @@ using namespace std;
 int size;
 bool **image;
 
-void renderPixel(int x, int y) {
+void renderPixel(int x, int y, int center, int radius) {
 	assert(x >= 0 && y >= 0 && x <= size && y <= size);
 	image[x][y] = 1;
 	
 	// TODO:  light up the pixel's symmetric counterpart
     image[y][x] = 1;
+
+	if (radius == 100)
+	{
+		image[center - (y - center)][x] = 1;
+		image[center - (x - center)][y] = 1;
+	}
+
+	if (radius == 150)
+	{
+		image[x][center - (y - center)] = 1;
+		image[y][center - (x - center)] = 1;
+	}
 }
 
-void rasterizeArc(int radius) {
+void rasterizeArc(int r) {
 	// TODO:  rasterize the arc using renderPixel to light up pixels
-    int x = 0;
+    int radius = 100;
+	int x = 0;
     int y = radius;
-    int d = 1 - radius;
-    int deltaE = 3;
-    int deltaSE = -2 * radius + 5;
-    renderPixel(x, y);
+    double d = 5.0/4.0 - radius;
+    renderPixel(y + r / 2, x + r / 2, 150, 100);
 
     while (y>x)
     {
         if (d < 0){
-            d += deltaE;
-            deltaE += 2;
-            deltaSE += 2;
+            d += 2.0*x+3.0;
         }
         else
         {
-            d += deltaSE;
-            deltaE += 2;
-            deltaSE += 4;
+            d += 2.0*(x-y)+5.0;
             y--;
         }
         x++;
-        renderPixel(x, y);
+        renderPixel(y + r / 2, x + r / 2, 150, 100);
+    }
+
+	radius = 150;
+	x = 0;
+    y = radius;
+    d = 5.0/4.0 - radius;
+    renderPixel(y + r / 2, x + r / 2, 150, 150);
+
+    while (y>x)
+    {
+        if (d < 0){
+            d += 2.0*x+3.0;
+        }
+        else
+        {
+            d += 2.0*(x-y)+5.0;
+            y--;
+        }
+        x++;
+        renderPixel(y + r / 2, x + r / 2, 150, 150);
     }
 }
 
